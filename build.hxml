@@ -1,0 +1,3 @@
+-cp .
+-neko ExtGmxToGml8.n
+-main ExtGmxToGml8

@@ -80,8 +80,8 @@ class ExtGmxToGml8 {
 						var funcArgs = Std.parseInt(xmlRead(xmlFind(funcNode, "argCount")));
 						var funcHelp = xmlRead(xmlFind(funcNode, "help"));
 						//
-						buf.add('global.g_$funcName = external_define(');
-						buf.add('"$fileName", "$funcXName", $funcKindGml, $funcRtGml, $funcArgs');
+						buf.add('global.f_$funcName = external_define(_path, ');
+						buf.add('"$funcXName", $funcKindGml, $funcRtGml, $funcArgs');
 						for (argNode in xmlFind(funcNode, "args").elementsNamed("arg")) {
 							buf.add(", " + (xmlRead(argNode) == "1" ? "ty_string" : "ty_real"));
 						}
@@ -89,13 +89,17 @@ class ExtGmxToGml8 {
 						//
 						out.add('\n#define $funcName\n');
 						if (funcHelp != "") out.add('/// $funcHelp\n');
-						out.add('return external_call(global.g_$funcName');
+						out.add('return external_call(global.f_$funcName');
 						for (i in 0 ... funcArgs) out.add(', argument$i');
 						out.add(');\n');
 					}
 					var fileInit = xmlRead(xmlFind(fileNode, "init"));
 					if (fileInit != "") buf.add('$fileInit();\n');
-					if (buf.length > 0) init.add('// $fileName:\n' + buf.toString());
+					if (buf.length > 0) {
+						init.add('// $fileName:\r\n');
+						init.add('var _path = "$fileName";\r\n');
+						init.add(buf.toString());
+					}
 				};
 			}
 		} // for (fileNode)
